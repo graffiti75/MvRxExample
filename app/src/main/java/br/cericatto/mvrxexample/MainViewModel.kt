@@ -1,4 +1,4 @@
-package br.cericatto.mvrxexample.ui.main
+package br.cericatto.mvrxexample
 
 import androidx.lifecycle.ViewModel
 
