@@ -4,21 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
+import com.airbnb.mvrx.*
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.main_fragment.*
-import kotlin.random.Random
+import java.util.concurrent.TimeUnit
 
 data class HelloWorldState(
     val title: String = "Hello World!",
-    val count: Int = 0) : MvRxState {
-    val titleWithCount = "$title : $count"
-}
+    val temperature: Async<Int> = Uninitialized
+) : MvRxState
 
 class HelloWorldViewModel(initialState: HelloWorldState) : MvRxViewModel<HelloWorldState>(initialState) {
-    fun incrementCount() = setState { copy(count = count + 1) }
+    fun fetchTemperature() {
+        Observable.just(72)
+            .delay(3, TimeUnit.SECONDS)
+            .execute { copy(temperature = it) }
+    }
 }
 
 class MainFragment : BaseMvRxFragment() {
@@ -35,12 +36,17 @@ class MainFragment : BaseMvRxFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         titleView.setOnClickListener {
-            viewModel.incrementCount()
+            viewModel.fetchTemperature()
         }
     }
 
     // invalidate will be automatically get called any time the state changes for our ViewModel's.
     override fun invalidate() = withState(viewModel) { state ->
-        titleView.text = state.titleWithCount
+        titleView.text = when (state.temperature) {
+            is Uninitialized -> "Click to load weather"
+            is Loading -> "Loading"
+            is Success -> "Weather: ${state.temperature()} degrees"
+            is Fail -> "Failed to load weather"
+        }
     }
 }
