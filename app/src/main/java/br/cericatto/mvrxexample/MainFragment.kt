@@ -11,11 +11,15 @@ import com.airbnb.mvrx.withState
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlin.random.Random
 
-data class HelloWorldState(val title : String = "Hello World ${Random.nextInt(100)}") : MvRxState {
-    val excitedTitle = "$title!"
+data class HelloWorldState(
+    val title: String = "Hello World!",
+    val count: Int = 0) : MvRxState {
+    val titleWithCount = "$title : $count"
 }
 
-class HelloWorldViewModel(initialState: HelloWorldState) : MvRxViewModel<HelloWorldState>(initialState)
+class HelloWorldViewModel(initialState: HelloWorldState) : MvRxViewModel<HelloWorldState>(initialState) {
+    fun incrementCount() = setState { copy(count = count + 1) }
+}
 
 class MainFragment : BaseMvRxFragment() {
 
@@ -29,8 +33,14 @@ class MainFragment : BaseMvRxFragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        titleView.setOnClickListener {
+            viewModel.incrementCount()
+        }
+    }
+
     // invalidate will be automatically get called any time the state changes for our ViewModel's.
     override fun invalidate() = withState(viewModel) { state ->
-        titleView.text = state.excitedTitle
+        titleView.text = state.titleWithCount
     }
 }
