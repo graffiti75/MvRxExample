@@ -1,6 +1,7 @@
 package br.cericatto.mvrxexample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,24 @@ data class HelloWorldState(
 ) : MvRxState
 
 class HelloWorldViewModel(initialState: HelloWorldState) : MvRxViewModel<HelloWorldState>(initialState) {
+    init {
+        subscribe {
+            state -> Log.d(MainFragment.TAG,"The state is $state")
+        }
+
+        // viewModel.selectSubscribe -> Updates only when single state property changes.
+        selectSubscribe(HelloWorldState::temperature) { temperature ->
+            Log.d(MainFragment.TAG, "The temperature is $temperature")
+        }
+
+        // viewModel.asyncSubscribe -> Updates for Async properties.
+        asyncSubscribe(HelloWorldState::temperature, onSuccess = { temperature ->
+            Log.d(MainFragment.TAG, "The temperature is $temperature")
+        }, onFail = { error ->
+            Log.e(MainFragment.TAG, "Temperature failed with ", error)
+        })
+    }
+
     fun fetchTemperature() {
         Observable.just(72)
             .delay(3, TimeUnit.SECONDS)
@@ -29,6 +48,26 @@ class MainFragment : BaseMvRxFragment() {
     // to the current fragment. It will also subscribe ViewModel in a lifecycle aware way, which will
     // automatically call invalidate() for any state changes that occur when the fragment started.
     private val viewModel : HelloWorldViewModel by fragmentViewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.subscribe {
+           state -> Log.d(TAG,"The state is $state")
+        }
+
+        // viewModel.selectSubscribe -> Updates only when single state property changes.
+        viewModel.selectSubscribe(HelloWorldState::temperature) { temperature ->
+            Log.d(TAG, "The temperature is $temperature")
+        }
+
+        // viewModel.asyncSubscribe -> Updates for Async properties.
+        viewModel.asyncSubscribe(HelloWorldState::temperature, onSuccess = { temperature ->
+            Log.d(TAG, "The temperature is $temperature")
+        }, onFail = { error ->
+            Log.e(TAG, "Temperature failed with ", error)
+        })
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -48,5 +87,9 @@ class MainFragment : BaseMvRxFragment() {
             is Success -> "Weather: ${state.temperature()} degrees"
             is Fail -> "Failed to load weather"
         }
+    }
+
+    companion object {
+        public const val TAG = "MainFragment"
     }
 }
