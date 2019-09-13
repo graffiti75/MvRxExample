@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
+import com.airbnb.mvrx.*
 import kotlinx.android.synthetic.main.main_fragment.*
 
 data class HelloWorldState(
     val title: String = "Hello World!",
-    val count: Int = 0) : MvRxState {
+    @PersistState val count: Int = 0) : MvRxState {
     val titleWithCount = "$title : $count"
 }
 
