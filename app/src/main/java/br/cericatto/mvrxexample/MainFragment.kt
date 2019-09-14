@@ -4,39 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.airbnb.mvrx.*
+import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.main_fragment.*
 
+data class Food(val name: String, val isVegetarian: Boolean, val isGlutenFree: Boolean)
+
 data class HelloWorldState(
-    val title: String = "Hello World!",
-    @PersistState val count: Int = 0) : MvRxState {
-    val titleWithCount = "$title : $count"
+    val title: String = "Hello World",
+    val foods: List<Food> = listOf(
+        Food("Pepperoni Pizza", false, false),
+        Food("Cauliflower Pizza", true, true),
+        Food("Philly Cheese Pizza", false, false),
+        Food("Salmon", false, true)
+    )
+){
+    val excitedTitle = "$title!"
+    val vegetarianFoods = foods.filter { it.isVegetarian }
+    val glutenFreeFoods = foods.filter { it.isGlutenFree }
 }
 
-class HelloWorldViewModel(initialState: HelloWorldState) : MvRxViewModel<HelloWorldState>(initialState) {
-    fun incrementCount() = setState { copy(count = count + 1) }
-}
+class MainFragment : Fragment() {
 
-class MainFragment : BaseMvRxFragment() {
-
-    // fragmentViewModel wraps Android's Jetpack ViewModelProvider, which will either create
-    // a new instance or give you an existing one if there is anyone in scope. And it will scope it
-    // to the current fragment. It will also subscribe ViewModel in a lifecycle aware way, which will
-    // automatically call invalidate() for any state changes that occur when the fragment started.
-    private val viewModel : HelloWorldViewModel by fragmentViewModel()
+    private val state : HelloWorldState()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        titleView.setOnClickListener {
-            viewModel.incrementCount()
-        }
-    }
-
-    // invalidate will be automatically get called any time the state changes for our ViewModel's.
-    override fun invalidate() = withState(viewModel) { state ->
-        titleView.text = state.titleWithCount
+        titleView.text = state.excitedTitle
     }
 }
