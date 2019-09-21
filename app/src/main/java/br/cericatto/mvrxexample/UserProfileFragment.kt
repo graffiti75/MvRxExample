@@ -24,7 +24,7 @@ class UserProfileViewModel(
     companion object : MvRxViewModelFactory<UserProfileViewModel, UserProfileState> {
         override fun create(viewModelContext: ViewModelContext, state: UserProfileState): UserProfileViewModel? {
             val userId = viewModelContext.args<UserProfileArgs>().userId
-            val userRepository = viewModelContext.app<CasterApplication>().userRepository
+            val userRepository = viewModelContext.app<CasterApplication>().component.userRepository()
             return UserProfileViewModel(state, userId, userRepository)
         }
     }
