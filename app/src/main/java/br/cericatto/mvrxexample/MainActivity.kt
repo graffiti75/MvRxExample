@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, UserProfileFragment.newInstance("42"))
+                .replace(R.id.container, MainFragment())
                 .commit()
         }
     }
