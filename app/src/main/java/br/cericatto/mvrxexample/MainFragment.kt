@@ -9,6 +9,11 @@ import kotlinx.android.synthetic.main.main_fragment.*
 
 data class HelloWorldState(
     val title: String = "Hello World!",
+    // This will tell Mavericks to include these values in onSavedInstanceState automatically.
+    // It is important to note that persistable properties must be Serializable or Parcelable.
+    // Is is not recommended serializing things like Async values because if we serialize Loading,
+    // you might be mislead that the app is actually Loading when in fact all you done was to persist
+    // that state.
     @PersistState val count: Int = 0) : MvRxState {
     val titleWithCount = "$title : $count"
 }
