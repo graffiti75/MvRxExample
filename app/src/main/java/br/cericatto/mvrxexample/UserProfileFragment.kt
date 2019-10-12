@@ -21,14 +21,14 @@ data class UserProfileArgs(val userId: String) : Parcelable
 class UserProfileFragment : BaseMvRxFragment() {
 
     private val viewModel : UserProfileViewModel by fragmentViewModel()
-//    private val args: UserProfileArgs by args()
+    private val args: UserProfileArgs by args()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun invalidate() = withState(viewModel) { state ->
-        titleView.text = state.userId
+        titleView.text = state.userId + args.userId
     }
 
     companion object {
