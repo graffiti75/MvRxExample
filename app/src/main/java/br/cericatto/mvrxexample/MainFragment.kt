@@ -13,7 +13,8 @@ import kotlinx.android.synthetic.main.main_fragment.*
 
 data class HelloWorldState(
     val title: String = "Hello World!",
-    val count: Int = 0) : MvRxState {
+    val count: Int = 0
+) : MvRxState {
     val titleWithCount = "$title : $count"
 }
 
